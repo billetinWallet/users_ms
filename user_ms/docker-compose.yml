@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  user_ms:
+    container_name: users_ms
+    restart: always
+    build: .
+    ports:
+      - "5002:3002"
+    depends_on:
+      - user_db
+    networks:
+      - mynetwork
+  user_db:
+    container_name: users_db
+    image: mongo
+    ports:
+      - "27018:27017"
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:

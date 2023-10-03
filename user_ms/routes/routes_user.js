@@ -2,8 +2,12 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/model_user');
 
+
 // Crear un nuevo usuario
 router.post('/', async (req, res) => {
+  if (!req.body) {
+    return res.status(400).json({ error: 'El cuerpo de la solicitud está vacío.' });
+  }
   try {
     const newUser = new User(req.body);
     await newUser.save();
@@ -23,29 +27,30 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Eliminar un usuario
+// Eliminar un usuario por su ID
 router.delete('/:id_user', async (req, res) => {
   try {
-    const users = await User.findByIdAndRemove(req.params.id_user);
-    if (!users) {
+    const user = await User.findOneAndDelete({ id_user: req.params.id_user });
+    if (!user) {
       return res.status(404).json({ error: 'Usuario no encontrado.' });
     }
-    res.status(200).json({ message: 'El usuario se eliminó correctamente' });
+    res.status(200).json({ message: 'Usuario eliminado con éxito' });
   } catch (error) {
     res.status(500).json({ error: 'Error al eliminar el usuario.' });
   }
 });
 
+
 // Actualizar la información de un usuario
 router.put('/:id_user', async (req, res) => {
   try {
-    const users = await User.findByIdAndUpdate(req.params.id_user, req.body, {
-      new: true,
+      const users = await User.findOneAndUpdate({ id_user:req.params.id_user }, req.body, {
+        new: true,
     });
     if (!users) {
       return res.status(404).json({ error: 'Usuario no encontrado.' });
     }
-    res.status(200).json({ message: 'Usuario actualizado con éxito', user });
+    res.status(200).json({ message: 'Usuario actualizado con éxito', users });
   } catch (error) {
     res.status(500).json({ error: 'Error al actualizar el usuario.' });
   }
